@@ -52,6 +52,8 @@ class MyClient extends AkairoClient implements IMyClient {
 
 export default new MyClient();
 
+export const stories = new Map<string, any>();
+stories.set("sample", new Map<string, any>());
 export const cachedUsers = new Map<string, {username: string}>();
 // (async function init(){
 //   const res = await fetch(`${config.api.prefix}/user`, "GET")

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@bothaven/common": "^1.1.6",
+    "@bothaven/common": "^1.1.7",
     "discord-akairo": "github:discord-akairo/discord-akairo",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",

@@ -9,7 +9,7 @@ jobs:
       - image: arvindr226/alpine-ssh
     steps:
       - checkout
-      - run: ssh -oStrictHostKeyChecking=no -v circleci@${SSH_HOST} "./bothaven/deploy-scripts/deploy-cpt-scoreboard"
+      - run: ssh -oStrictHostKeyChecking=no -v circleci@${SSH_HOST} "./bothaven/deploy-scripts/deploy-king-balthazar"
 
 # Orchestrate our job run sequence
 workflows:

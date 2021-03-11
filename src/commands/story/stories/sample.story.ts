@@ -1,20 +1,37 @@
 import { ArgumentGenerator, Command } from "discord-akairo";
-import { Channel } from "discord.js";
-import { DMChannel } from "discord.js";
 import { Message } from "discord.js";
-import { stringify } from "node:querystring";
-import { NPC } from "./npc";
+import { NPC } from "../npc";
+import { SampleEvent, SampleEvent2 } from "./sample";
 
 class InitStoryLine extends Command {
   constructor() {
-    super("start_story", {
-      aliases: ["story"],
+    super("story sample", {
+      aliases: ["sample"],
       category: "story",
       description: "Starts random story.",
       channel: "dm",
     });
   }
   *args(message: Message) {
+    const tbd = yield ({type: SampleEvent.type, prompt: {
+      start: SampleEvent.prompt.start,
+      retry: SampleEvent.prompt.retry,
+      cancel: SampleEvent.prompt.cancel,
+      timeout: SampleEvent.prompt.cancel,
+      ended: SampleEvent.prompt.ended
+    }})
+    SampleEvent.callback && SampleEvent.callback(tbd, message);
+    
+    const tbd2 = yield ({type: SampleEvent2.type, prompt: {
+      start: SampleEvent2.prompt.start,
+      retry: SampleEvent2.prompt.retry,
+      cancel: SampleEvent2.prompt.cancel,
+      timeout: SampleEvent2.prompt.cancel,
+      ended: SampleEvent2.prompt.ended
+    }})
+    SampleEvent2.callback && SampleEvent2.callback(tbd2, message);
+    return {tbd, tbd2};
+
     /* NPCS */
     const King = new NPC({
       name: "High King Edmund",
@@ -31,7 +48,7 @@ class InitStoryLine extends Command {
     /* DIALOGS */
 
     /* Choose Class */
-    const classChoices = ["Warrior", "Rouge", "Archer"]
+    const classChoices = ["Warrior", "Rogue", "Archer"]
     const classTypes = classChoices.concat(classChoices.map((_,i) =>  (i +1).toString()));
     const classFields = classChoices.map((val, i) => ({name: `${i +1}.`, value: val, inline: true}));
     const chooseCharacter = King.talk("> Who do you wish to be, if you could be anyone?")
@@ -48,8 +65,12 @@ class InitStoryLine extends Command {
     };
     if(!isNaN(+chosenCharacter)) chosenCharacter = classChoices[chosenCharacter -1]
 
-    /* a */
-    const pirateChoices = ["attack", "run", "bargain"];
+    /* Pirate approaches */
+    const pirateChoicesMap = new Map<string, (a: any) => any>()
+    pirateChoicesMap.set("attack", () => {})
+    pirateChoicesMap.set("run", () => {message.reply("RUN BITCH RUN")})
+    pirateChoicesMap.set("bargarin", () => {})
+    const pirateChoices = Array.from(pirateChoicesMap.keys());
     const pirateTypes = pirateChoices.concat(pirateChoices.map((_,i) =>  (i +1).toString()));
     const pirateFields = pirateChoices.map((val, i) => ({name: `${i +1}.`, value: val, inline: true}));
     const pirateApproaches = Pirate.talk(`> Arr, what do you know. A weak old ${chosenCharacter}`)
@@ -65,13 +86,16 @@ class InitStoryLine extends Command {
         }
     }
     if(!isNaN(+choice)) choice = pirateChoices[choice -1]
-    
+    const func = pirateChoicesMap.get(choice)as () => any;
+    func();
 
     return { chosenCharacter, choice };
   }
   exec(message: Message, args: any) {
-      message.reply(args.chosenCharacter + args.choice);
-    return;
+    console.log(args)
+    // this.handler.register(new SampleEvent());
+    // this.handler.runCommand(message, new SampleEvent(), args)
+    // return;
   }
 }
 
