@@ -1,7 +1,7 @@
-import { Message, User } from "discord.js";
-import { GuildMember } from "discord.js";
+import { Message } from "discord.js";
 import { ColorResolvable } from "discord.js";
 import { MessageEmbed } from "discord.js";
+import { Person } from "../stories/sample/util/classes";
 
 export interface Stats {
   health: number;
@@ -23,8 +23,9 @@ export class NPC {
   iconURL: string;
   color: ColorResolvable | string;
   message: Message | undefined;
-  // listener: User | GuildMember;
   stats: Stats;
+  isAlive: boolean;
+  inventory: [];
   constructor(options: {
     name: string;
     iconURL: string;
@@ -37,8 +38,9 @@ export class NPC {
     this.iconURL = iconURL;
     this.color = color || "RANDOM";
     this.message = message;
-    // this.listener = message.member as GuildMember;
     this.stats = stats || BaseStats;
+    this.isAlive = true;
+    this.inventory = [];
   }
 
   talk(message?: string) {
@@ -50,5 +52,28 @@ export class NPC {
 			// .setFooter(`Requested by ${this.message.author.username}`, this.message.author.displayAvatarURL({dynamic: true}))
 
     return TalkEmbed;
+  }
+  showStats(message?: string ){
+    const myStats = Object.entries(this.stats).map(([name, value]) => ({name,value,inline: true}));
+    const StatEmbed = this.talk(message)
+      .addFields(myStats);
+      return StatEmbed;
+
+  }
+  getAttacked(user: Person){
+    user.health = user.health - this.stats.attack * user.defense;
+    this.stats.health = this.stats.health - user.attack * this.stats.defense;
+    this.isAlive = this.stats.health > 0 ? true : false;
+
+    return this;
+  }
+  bargainWith(user: Person): any | undefined{
+    if(!this.inventory.length) return;
+    
+    const intrigued = Math.round(Math.random());
+    if(!intrigued) return;
+
+    const randomItemInInventory = this.inventory[Math.floor(Math.random()*this.inventory.length)];
+    return randomItemInInventory;
   }
 }

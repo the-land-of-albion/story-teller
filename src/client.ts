@@ -6,6 +6,7 @@ import {
 } from "discord-akairo";
 import * as path from "path";
 import IMyClient from "./client.interface";
+import { Warrior } from "./commands/story/stories/sample/util/classes";
 import config from "./config";
 import { fetch } from "./config/fetch";
 class MyClient extends AkairoClient implements IMyClient {
@@ -52,8 +53,8 @@ class MyClient extends AkairoClient implements IMyClient {
 
 export default new MyClient();
 
-export const stories = new Map<string, any>();
-stories.set("sample", new Map<string, any>());
+export const stories = new Map<string, Map<string, Warrior>>();
+stories.set("sample", new Map<string, Warrior>());
 export const cachedUsers = new Map<string, {username: string}>();
 // (async function init(){
 //   const res = await fetch(`${config.api.prefix}/user`, "GET")
