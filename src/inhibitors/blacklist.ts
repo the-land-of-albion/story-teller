@@ -1,6 +1,7 @@
 import { Inhibitor } from "discord-akairo";
 import { Message } from "discord.js";
 import { cachedUsers } from "../client";
+import { SgtAuth } from "../commands/story/stories/sample/npcs/sgt-auth.npc";
 import config from "../config";
 import { fetch } from "../config/fetch";
 
@@ -12,7 +13,6 @@ class BlacklistInhibitor extends Inhibitor {
   }
 
   async exec(message: Message) {
-    return false;
     /* Validating Cache */
     if (cachedUsers.has(message.member?.id as string)) {
       return false;
@@ -22,7 +22,7 @@ class BlacklistInhibitor extends Inhibitor {
         /* Validating API */
         const res = await fetch(`${config.api.prefix}/user/${message.member?.id}`, "GET");
         if(!res.ok) {
-            message.reply("Please create an account first.");
+            message.reply(SgtAuth.talk("Please create an account first.").addField(`How?`,`> do \`!auth help\` for more information.\n*Be sure to checkout the guide!*`));
             return true;
         }
         /* Add to cache */
