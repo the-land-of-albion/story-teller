@@ -3,7 +3,7 @@ const prefix = NODE_ENV == "production" ? "!king" :  "?king";
 export default {
     bot: {
         prefix,
-        name: "King Balthazar",
+        name: "King Brom",
         iconURL: "https://raw.githubusercontent.com/BotHaven/static/main/img/three-wise-men/baltazar.png"
     },
     api: {
