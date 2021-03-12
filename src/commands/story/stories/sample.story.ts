@@ -11,6 +11,7 @@ import { ManufacturingArm } from "./sample/npcs/manufacturingArm.npc";
 import { SampleEvent, SampleEvent2 } from "./sample";
 import { SampleEvent3 } from "./sample/events/sample.3.event";
 import { SampleMessage } from "./sample/interfaces/SampleMessage";
+import {SampleEvent4} from "./sample/events/sample.4.event";
 import {
   getExtraMessage,
   sendNpc,
@@ -18,6 +19,9 @@ import {
 } from "./sample/util/getExtraMessage";
 import { Balthazar } from "./sample/npcs/king-balthazar.npc";
 import config from "../../../config";
+import { Merchant } from "./sample/npcs/merchant.npc";
+import { SampleEvent5 } from "./sample/events/sample.5.event";
+import { User } from "discord.js";
 class InitStoryLine extends Command {
   constructor() {
     super("story sample", {
@@ -29,6 +33,7 @@ class InitStoryLine extends Command {
   }
   
   *args(message: SampleMessage) {
+    return {a: "a"}
     /* 
     -Tips & Tricks & Conventions-
     Variables with the prefix "_" are userInputs
@@ -112,6 +117,40 @@ class InitStoryLine extends Command {
       SampleEvent3.callback && SampleEvent3.callback(_attackRunWait, message);
     }
 
+    while(SampleEvent4.npc.isAlive){
+      const _tbd= yield {
+        type: SampleEvent4.type,
+        prompt: {
+          start: SampleEvent4.prompt.start,
+          retry: SampleEvent4.prompt.retry,
+          cancel: SampleEvent4.prompt.cancel,
+          ended: SampleEvent4.prompt.ended,
+          timeout: SampleEvent4.prompt.timeout,
+        },
+      };
+      SampleEvent4.callback && SampleEvent4.callback(_tbd, message);
+    }
+    SampleEvent4.npc.isAlive = true;
+
+    message.sendNpc(Merchant.talk("> Help, there's a giant!"))
+      .then((m) => {
+        stopEventLoopFor(7250);
+      })    
+
+    while(SampleEvent5.npc.isAlive){
+      const _tbd= yield {
+        type: SampleEvent5.type,
+        prompt: {
+          start: SampleEvent5.prompt.start,
+          retry: SampleEvent5.prompt.retry,
+          cancel: SampleEvent5.prompt.cancel,
+          ended: SampleEvent5.prompt.ended,
+          timeout: SampleEvent5.prompt.timeout,
+        },
+      };
+      SampleEvent5.callback && SampleEvent5.callback(_tbd, message);
+    }
+
     return {
       _className,
       _name,
@@ -128,7 +167,18 @@ class InitStoryLine extends Command {
     }
     setTimeout(()=> {
       message.reply(embed)
-      .then((m)=>m.react("❤️"));
+      .then((m)=>{
+        m.react("❤️")
+        m.awaitReactions((r, u: User) => u.id === message.author.id, { max: 1,time: 3e5})
+        .then((collected)=> {
+          if(collected.first()?.emoji.name === "❤️"){
+            message.reply(Worker.talk("Thanks for cleaning up after yourself."))
+            setTimeout(()=> {
+              message.channel.delete();
+            }, 5000)
+          }
+        })
+      });
     },3000)
   }
 }

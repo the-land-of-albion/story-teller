@@ -51,7 +51,7 @@ choices.set("attack", (input, message: SampleMessage) => {
     message.sendUser(user.showStats());
     return message.sendNpc(
       XPFairy.talk("You killed the Celtic Warrior. Noice. Smoart.")
-    );
+    )
   }
   message.extra.get("user")?.edit(user.showStats());
 });
@@ -59,23 +59,15 @@ choices.set("run", (input, message: Message) => {
   CelticWarrior.isAlive = false;
   return message.reply(CelticWarrior.talk("AHHHHH, OOHHHH!"));
 });
-choices.set("wait", (input, message: SampleMessage) => {
-    words2Say = "Ouuuhhhh! Arrrrrgh!"
+choices.set("bargain", (input, message: SampleMessage) => {
     const user = getUser("sample",message);
-    CelticWarrior.getAttacked(user);
-    if (!user.isALive()) {
-        CelticWarrior.isAlive = false;
-        return message.sendNpc(XPFairy.talk("Hehe, you died."));
-  }
-    if (!CelticWarrior.isAlive) {
-    user.xp = user.xp +27;
-    message.sendUser(user.showStats());
-        message.sendNpc(
-        XPFairy.talk("You killed the Celtic Warrior. Noice. Smoart.")
-        ).then((m) => {
-          console.log("WHAT THE FUCK")
-          m.delete({timeout: 3000})})
-        return;
+    const {intrigued, item} = CelticWarrior.bargainWith(user);
+    if(intrigued) {
+      user.inventory.push(item);
+      return message.sendNpc(XPFairy.talk(`You persuaded the ${CelticWarrior.name} to give you \`${item.name}\`.`))
+    } else {
+      message.sendUser(user.showStats());
+      words2Say ="> Who do you think I am?!?";
     }
 });
 

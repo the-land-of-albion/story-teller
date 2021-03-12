@@ -9,10 +9,13 @@ export class Person {
     oauth_id: string;
     iconURL: string;
     className: string;
+    color: ColorResolvable;
+
     xp: number;
     selectedTitle: number;
+    
     titles: string[];
-    color: ColorResolvable;
+    inventory: any[];
     constructor(options: {stats: {health: number, defense: number, attack: number}, name: string, oauth_id: string, iconURL: string, color}){
         const {health, defense, attack} = options.stats;
         const {name, oauth_id, iconURL, color} = options;
@@ -24,11 +27,13 @@ export class Person {
         this.iconURL = iconURL;
         this.color = color || "BLUE";
 
+        this.className = this.constructor.name;
         this.titles = ["Adventurer"]
         this.selectedTitle = 0;
-
-        this.className = this.constructor.name;
+        this.inventory = [];
+        
         this.xp = 0;
+
     }
     isALive(){
         return this.health > 0 ? true : false;
@@ -47,11 +52,16 @@ export class Person {
       return TalkEmbed;
     }
     showStats(){
+        if(this.health<= 0) return this.talk("**Dead**")
+            .setTimestamp()
+            .setColor("RED")
+            .setFooter(`Died on the ${new Date().toLocaleString()}`)
         const statsFields = Object.entries(this).filter(([name,value])=>["health","defense", "attack"].includes(name.toLocaleLowerCase())).map(([name,value]) => ({name,value,inline: true}))
         return this.talk()
-            .addFields([{name: "Class:", value: this.className, inline: true}, {name: "Title:", value: this.titles[this.selectedTitle], inline: true},
-            {name: "Level", value: this.level(), inline: true}, {name: "XP", value: this.xp, inline: true}
-        ])
+            .addFields([{name: "Class", value: this.className, inline: true}, {name: "Title", value: this.titles[this.selectedTitle], inline: true}])
+            .addFields([
+            {name: "Level", value: this.level(), inline:true}, {name: "XP", value: this.xp, inline: true}
+            ])
             .addFields(statsFields);
             
     }

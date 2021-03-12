@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import { ColorResolvable } from "discord.js";
 import { MessageEmbed } from "discord.js";
+import { BargainResponse } from "../stories/sample/interfaces/bargainResponse";
 import { Person } from "../stories/sample/util/classes";
 
 export interface Stats {
@@ -54,7 +55,7 @@ export class NPC {
     return TalkEmbed;
   }
   showStats(message?: string ){
-    const myStats = Object.entries(this.stats).map(([name, value]) => ({name,value,inline: true}));
+    const myStats = Object.entries(this.stats).map(([name, value]: [string, number]) => ({name,value: value.toFixed(2),inline: true}));
     const StatEmbed = this.talk(message)
       .addFields(myStats);
       return StatEmbed;
@@ -67,13 +68,17 @@ export class NPC {
 
     return this;
   }
-  bargainWith(user: Person): any | undefined{
-    if(!this.inventory.length) return;
+  bargainWith(user: Person): BargainResponse{
+    const base = { intrigued : false, item: null}
+    if(!this.inventory.length) return base;
     
     const intrigued = Math.round(Math.random());
-    if(!intrigued) return;
+    if(!intrigued) {
+      user.health = user.health - this.stats.attack * user.defense;
+      return base;
+    }
 
     const randomItemInInventory = this.inventory[Math.floor(Math.random()*this.inventory.length)];
-    return randomItemInInventory;
+    return {...base, item: randomItemInInventory}
   }
 }
