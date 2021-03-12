@@ -33,7 +33,6 @@ class InitStoryLine extends Command {
   }
   
   *args(message: SampleMessage) {
-    return {a: "a"}
     /* 
     -Tips & Tricks & Conventions-
     Variables with the prefix "_" are userInputs
