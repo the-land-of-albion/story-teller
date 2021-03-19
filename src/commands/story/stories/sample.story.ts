@@ -56,9 +56,8 @@ class InitStoryLine extends Command {
 
     /* Message Collector */
     const messageCollector = message.channel.createMessageCollector((m) => !m.author.bot, {time: 1e5});
-    messageCollector.on("end", (messages: Collection<string, Message>) =>{
-      console.log("end");
-      messages.forEach((m)=>m.deletable && m.delete());
+    messageCollector.on("collect", (message: Message) =>{
+      message.deletable && message.delete()
     })
 
     /* Start Storyline */
